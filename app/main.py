@@ -6,7 +6,8 @@ from typing import Union
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.routers import model, data
+from app.routers.v1 import model, data
+from app.config.config import Config
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,7 +21,7 @@ async def setup_logging():
     config = log_configs.get('dev', "logging.dev.ini")
     config_path = "/".join([CONFIG_DIR, config])
 
-    timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
+    timestamp = datetime.now().strftime("%Y%m%d")
 
     logging.config.fileConfig(
         config_path,
@@ -47,21 +48,44 @@ async def lifespan(app: FastAPI):
     # # add handler to logger
     # logger.addHandler(handler)
 
-    # Set Mlflow
-    # mlflow.set_tracking_uri('127.0.0.1:5000')
-    # mlflow.autolog()
-
     yield
 
     # TODO: Clean up method before shutting down service
     # db.close()
 
-app = FastAPI(lifespan=lifespan)
+logger = logging.getLogger(__name__)
 
-app.include_router(router=model.router,
-                   tags=["Models"],
-                   responses={500: {'description': 'internal server error'}})
+try:
+    app = FastAPI(
+        lifespan=lifespan,
+        title="KewDetect",
+        description="Kewdetect Main Service",
+        version="0.0.1",
+        terms_of_service="http://example.com/terms/",
+        contact={
+            "name": "Kewdetect Developer",
+            "url": "http://x-force.example.com/contact/",
+            "email": "dp@x-force.example.com",
+        },
+        license_info={
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+        }
+    )
+    app.conf = Config()
 
-@app.get("/")
-async def root():
-    return {'hello': 'world'}
+    app.include_router(router=model.router,
+                    tags=["Models"],
+                    responses={500: {'description': 'internal server error'}})
+
+    app.include_router(router=data.router,
+                    tags=["Data"],
+                    responses={500: {'description': 'internal server error'}})
+    
+    @app.get("/")
+    async def root():
+        return {'hello': 'world'}
+    
+    logger.info('application is ready and serving')
+except Exception as e:
+    logger.error(str(e))
