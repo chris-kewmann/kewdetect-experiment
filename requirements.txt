@@ -3,6 +3,7 @@ func_timeout==4.3.5
 mlflow==2.3.1
 polars==0.17.14
 psycopg2_binary==2.9.6
+pydantic==1.10.7
 pyod==1.0.9
 python-dotenv==1.0.0
 scikit_learn==1.2.2
