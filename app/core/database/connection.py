@@ -8,12 +8,16 @@ load_dotenv()
 
 from app.config import config
 
+# Get Logger
 logger = logging.getLogger(__name__)
 logger.info(f'psycopg2 version : {psycopg2.__version__}')
 
+# Create sqalchemy base model
+Base = declarative_base()
+
+# Create session maker
 SQLALCHEMY_DATABASE_URL = config.DB_POSTGRES_URI
 
-"""
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )
@@ -22,5 +26,13 @@ CreateSession = sessionmaker(autocommit=False,
                             autoflush=False,
                             bind=engine)
 
-Base = declarative_base()
-"""
+# Creating new database session
+def get_session():
+    logger.info('Creating new database session...')
+    session = CreateSession()
+    try:
+        logger.info('New database session is created...')
+        yield session
+    finally:
+        logger.info('Closing database session...')
+        session.close()
