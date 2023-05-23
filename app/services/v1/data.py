@@ -1,17 +1,11 @@
 import polars as pl
+import logging
+from sqlalchemy.orm import Session
+from app.core.database import crud, connection
 
-from fastapi import Depends
-#from app.core.database import CreateSession
+logger = logging.getLogger(__name__)
 
-# def get_session():
-#     session = CreateSession()
-#     try:
-#         yield session
-#     finally:
-#         session.close()
-
-def get_data(table_name: str):
-    #session = Depends(get_session())
+def get_data(table_name: str, session: Session):
     pass
 
 def get_data_csv(file_path: str, 
@@ -20,8 +14,10 @@ def get_data_csv(file_path: str,
 
     return df
 
-def get_data_db(table_name: str):
-    pass
+def get_data_db(table_name: str, 
+                session: Session):
+    result = crud.get_transaction_data(session)
+    return result
 
 def get_data_stream(topic_name: str):
     pass
