@@ -7,24 +7,37 @@ load_dotenv()
 
 # Set all configuration variables here
 # Database Variables
-DB_POSTGRES_URI = os.getenv('DB_POSTGRES_URI')
-# DB_MYSQL_URI =
+DB_POSTRES_USERNAME = os.getenv('DB_POSTGRES_USERNAME')
+DB_POSTRES_PASSWORD = os.getenv('DB_POSTGRES_PASSWORD')
+DB_POSTGRES_HOST = os.getenv('DB_POSTGRES_HOST')
+DB_POSTGRES_PORT = os.getenv('DB_POSTGRES_PORT')
+DB_POSTGRES_NAME = os.getenv('DB_POSTGRES_NAME')
+DB_POSTGRES_URI = f'postgresql://{DB_POSTRES_USERNAME}:{DB_POSTRES_PASSWORD}@{DB_POSTGRES_HOST}:{DB_POSTGRES_PORT}/{DB_POSTGRES_NAME}'
+
+# DB_MYSELF_USERNAME =
+# DB_MYSQL_PASSWORD =
+# DB_MYSQL_HOST =
+# DB_MYSEL_NAME =
 
 # Elastic Search Variables
 # ES_HOST =
 # ES_PORT =
 
 # Mlflow Variables
-MLFLOW_HOST = '127.0.0.1'
-MLFLOW_PORT = 5000
+MLFLOW_HOST = os.getenv('MLFLOW_HOST')
+MLFLOW_PORT = os.getenv('MLFLOW_PORT')
 MLFLOW_TRACKING_URI = f'http://{MLFLOW_HOST}:{MLFLOW_PORT}'
-MLFLOW_EXPERIMENT_NAME = 'kewdetect_models'
+MLFLOW_EXPERIMENT_NAME = os.getenv('MLFLOW_EXPERIMENT_NAME')
 
 # Non-variable configuration
 logger = logging.getLogger(__name__)
 
 class Config:
-
+    """
+    This configuration is only set once and will be used several times during the service lifetime
+    components:
+        - mlflow tracking
+    """
     def __init__(self):
         try:
             self.set_mlflow()
