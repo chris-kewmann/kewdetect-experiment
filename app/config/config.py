@@ -29,6 +29,9 @@ MLFLOW_PORT = os.getenv('MLFLOW_PORT')
 MLFLOW_TRACKING_URI = f'http://{MLFLOW_HOST}:{MLFLOW_PORT}'
 MLFLOW_EXPERIMENT_NAME = os.getenv('MLFLOW_EXPERIMENT_NAME')
 
+# Security Variables
+ENCRYPT_KEY = os.getenv('ENCRYPT_KEY')
+
 # Non-variable configuration
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,7 @@ class Config:
     """
     def __init__(self):
         try:
+            self.mlflow_client = None
             self.set_mlflow()
 
             logging.info("initial config is success!")
