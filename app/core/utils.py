@@ -1,4 +1,5 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
+from fastapi import HTTPException, status
 from app.config import config
 from app.core.connection.postgres import engine
 from app.database.v1.models.rule import Base as BaseRule
@@ -22,11 +23,21 @@ def create_migration():
     BaseTransaction.metadata.create_all(bind=engine)
 
 def encrypt(inp: str):
-    if not isinstance(inp, bytes):
-        inp = inp.encode(encoding='utf-8')
-    f = Fernet(config.ENCRYPT_KEY)
-    return f.encrypt(inp).decode()
+    try:
+        if not isinstance(inp, bytes):
+            inp = inp.encode(encoding='utf-8')
+        f = Fernet(config.ENCRYPT_KEY)
+        result = f.encrypt(inp).decode()
+    except InvalidToken:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY , detail=f'invalid id')
+
+    return result
 
 def decrypt(inp: str):
-    f = Fernet(config.ENCRYPT_KEY)
-    return f.decrypt(inp).decode(encoding='utf-8')
+    try:
+        f = Fernet(config.ENCRYPT_KEY)
+        result = f.decrypt(inp).decode(encoding='utf-8')
+    except InvalidToken:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY , detail=f'invalid id')
+    
+    return result
