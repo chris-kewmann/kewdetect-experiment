@@ -6,7 +6,7 @@ from typing import Union
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.routers.v1 import model, data
+from app.routers.v1 import model, data, rule, migrate
 from app.config.config import Config
 
 from dotenv import load_dotenv
@@ -31,22 +31,8 @@ async def setup_logging():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Execute following methods at starting service time
     await setup_logging()
-
-    # # Set logger
-    # # instantiate logger
-    # logger = logging.getLogger(__name__)
-    # logger.setLevel(logging.INFO)
-
-    # # define handler and formatter
-    # handler = logging.StreamHandler()
-    # formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-
-    # # add formatter to handler
-    # handler.setFormatter(formatter)
-
-    # # add handler to logger
-    # logger.addHandler(handler)
 
     yield
 
@@ -61,11 +47,11 @@ try:
         title="KewDetect",
         description="Kewdetect Main Service",
         version="0.0.1",
-        terms_of_service="http://example.com/terms/",
+        terms_of_service="https://www.kewmann.com/",
         contact={
             "name": "Kewdetect Developer",
-            "url": "http://x-force.example.com/contact/",
-            "email": "dp@x-force.example.com",
+            "url": "https://www.kewmann.com/company/contacts",
+            "email": "dev@kewmann.com",
         },
         license_info={
             "name": "Apache 2.0",
@@ -74,12 +60,20 @@ try:
     )
     app.conf = Config()
 
+    app.include_router(router=data.router,
+                    tags=["Data"],
+                    responses={500: {'description': 'internal server error'}})
+    
     app.include_router(router=model.router,
                     tags=["Models"],
                     responses={500: {'description': 'internal server error'}})
-
-    app.include_router(router=data.router,
-                    tags=["Data"],
+    
+    app.include_router(router=rule.router,
+                    tags=["Rules"],
+                    responses={500: {'description': 'internal server error'}})
+    
+    app.include_router(router=migrate.router,
+                    tags=["Migration"],
                     responses={500: {'description': 'internal server error'}})
     
     @app.get("/")
