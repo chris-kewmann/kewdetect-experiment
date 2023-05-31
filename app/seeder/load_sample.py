@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 PG_DATABASE_URI = 'postgresql+psycopg2://postgres:postgres@127.0.0.1:5432/kewdetect'
-PG_TABLE_NAME = 'transaction'
+PG_TABLE_NAME = 'sample_dataset'
 
 DATA_PATH = './sample/data_trx.csv'
 
