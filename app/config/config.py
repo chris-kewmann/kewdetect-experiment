@@ -53,7 +53,7 @@ class MlflowSetup:
     """
     def __init__(self):
         try:
-            self.mlflow_client = None
+            # self.mlflow_client = None
             self.set_mlflow()
 
             logging.info("initial config is success!")
@@ -68,7 +68,7 @@ class MlflowSetup:
 
             mlflow.set_experiment(settings.mlflow_experiment_name)
 
-            self.mlflow_client = mlflow.MlflowClient()
+            # self.mlflow_client = mlflow.MlflowClient()
         except Exception:
             logger.critical("failed to connect mlflow")
             raise

@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.routers.v1 import model, data, rule, migrate
-from app.config.config import Config
+from app.config.config import MlflowSetup
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -33,6 +33,7 @@ async def setup_logging():
 async def lifespan(app: FastAPI):
     # Execute following methods at starting service time
     await setup_logging()
+    mlflow_setup = MlflowSetup()
 
     yield
 
@@ -58,7 +59,6 @@ try:
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         }
     )
-    app.conf = Config()
 
     app.include_router(router=data.router,
                     tags=["Data"],
