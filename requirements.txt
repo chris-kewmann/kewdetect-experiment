@@ -1,10 +1,11 @@
+connectorx==0.3.1
 cryptography==40.0.2
 fastapi==0.95.2
 featurewiz==0.3.1
 func_timeout==4.3.5
 mlflow==2.3.1
 pandas==2.0.1
-polars==0.17.15
+polars==0.18.0
 psycopg2_binary==2.9.6
 pydantic==1.10.7
 pyod==1.0.9
