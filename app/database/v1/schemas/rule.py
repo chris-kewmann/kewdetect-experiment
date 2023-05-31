@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 from pydantic import BaseModel, Field
 
 class RuleBase(BaseModel):
@@ -18,6 +18,9 @@ class RuleDetail(RuleBase):
     
     class Config:
         orm_mode = True
+
+class RuleDetailList(BaseModel):
+    rules: List[RuleDetail]
 
 class RuleUpdate(RuleDetail):
     pass

@@ -16,7 +16,7 @@ router = APIRouter(prefix='/v1/rules',
             status_code=status.HTTP_200_OK,
             summary="Get Rules",
             description="Get list of rules",
-            response_model=List[schema.RuleDetail])
+            response_model=schema.RuleDetailList)
 async def get_rules(limit: Union[int, None] = None, session: Session = Depends(get_session)):
     return service.get_rules(session, limit)
 

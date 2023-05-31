@@ -19,11 +19,12 @@ def create_rule(db: Session, rule: schema.RuleCreate):
 
 def get_rules(db: Session, limit: int = 100):
     logger.info('getting rules')
-    result = crud.get_rules(db, limit=limit)
-    for res in result:
-        res.id = encrypt(str(res.id))
+    rules = crud.get_rules(db, limit=limit)
+    for rule in rules:
+        rule.id = encrypt(str(rule.id))
 
     logger.info('get all rules success')
+    result = schema.RuleDetailList(rules=rules)
     return result
 
 def get_rule_detail(db: Session, rule_id: str):
