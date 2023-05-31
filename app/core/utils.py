@@ -2,11 +2,15 @@ from cryptography.fernet import Fernet, InvalidToken
 from fastapi import HTTPException, status
 from app.config import config
 from app.core.connection.postgres import engine
+from app.database.v1.models.model import Base as BaseModel
 from app.database.v1.models.rule import Base as BaseRule
 from app.database.v1.models.transaction import Base as BaseTransaction
 
 def create_migration():
     # Create table if not exist
+    BaseModel.metadata.drop_all(bind=engine)
+    BaseModel.metadata.create_all(bind=engine)
+
     BaseRule.metadata.drop_all(bind=engine)
     BaseRule.metadata.create_all(bind=engine)
     
