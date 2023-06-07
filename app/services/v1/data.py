@@ -1,7 +1,7 @@
 import polars as pl
 import logging
 from sqlalchemy.orm import Session
-from app.core.database import crud, connection
+from app.database.v1.crud import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ def get_data_csv(file_path: str,
 
 def get_data_db(table_name: str, 
                 session: Session):
-    result = crud.get_transaction_data(session)
+    result = transaction.get_transaction_data(session)
     return result
 
 def get_data_stream(topic_name: str):

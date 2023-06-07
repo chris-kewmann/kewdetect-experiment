@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.services.v1.data import get_data_csv, get_data_db
-from app.core.database import connection
+from app.core.connection.postgres import get_session
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -15,14 +15,13 @@ class GetData(BaseModel):
 
 # Set router group
 router = APIRouter(prefix='/v1/data',
-                   tags=["data"],
                    responses={500: {'description': 'Internal Server Error'}})
 # Endpoints
 @router.get(path="/", 
             status_code=status.HTTP_200_OK,
             summary="Get sample data",
             description="Retrieve data")
-async def get_data(request: GetData, session: Session=Depends(connection.get_session)):
+async def get_data(request: GetData, session: Session=Depends(get_session)):
     if request.source == 'csv':
         df = get_data_csv(file_path='app/seeder/sample/data_trx.csv')
         df = df.limit(10).to_dicts()
@@ -35,8 +34,8 @@ async def get_data(request: GetData, session: Session=Depends(connection.get_ses
 
 @router.post(path="/", 
             status_code=status.HTTP_200_OK,
-            summary="Add data source",
-            description="Add and set data source")
+            summary="Select data source",
+            description="Select and set data source")
 async def add_data():
     pass
 
