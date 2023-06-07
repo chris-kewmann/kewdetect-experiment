@@ -62,24 +62,20 @@ try:
 
     app.include_router(router=data.router,
                     tags=["Data"],
-                    responses={500: {'description': 'internal server error'}})
+                    responses={500: {'description': 'Internal Server Error'}})
     
     app.include_router(router=model.router,
                     tags=["Models"],
-                    responses={500: {'description': 'internal server error'}})
+                    responses={500: {'description': 'Internal Server Error'}})
     
     app.include_router(router=rule.router,
                     tags=["Rules"],
-                    responses={500: {'description': 'internal server error'}})
+                    responses={500: {'description': 'Internal Server Error'}})
     
     app.include_router(router=migrate.router,
                     tags=["Migration"],
-                    responses={500: {'description': 'internal server error'}})
-    
-    @app.get("/")
-    async def root():
-        return {'hello': 'world'}
+                    responses={500: {'description': 'Internal Server Error'}})
     
     logger.info('application is ready and serving')
 except Exception as e:
-    logger.error(str(e))
+    logger.exception('start service failed')
