@@ -2,7 +2,7 @@ import connectorx
 import logging
 import mlflow
 import polars as pl
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from mlflow import MlflowClient
 from pyod.models.ecod import ECOD
 from pyod.models.copod import COPOD
@@ -130,10 +130,10 @@ def get_model_detail(db: Session, model_id: str):
     del model['algorithm']
     return dict(**tags, **data.params, **data.metrics, **model)
 
-def predict(request: schema.ModelPredict):
+def predict(request: schema.ModelPredict, background_tasks: BackgroundTasks):
     try:
         # Load Model
-        model_uri = f'runs:/{request.run_id}/model'
+        model_uri = f'runs:/{request.mlflow_run_id}/model'
         model = mlflow.sklearn.load_model(model_uri=model_uri)
     
         features = model.feature_names_in_
@@ -157,11 +157,13 @@ def predict(request: schema.ModelPredict):
         df.fillna(0, inplace=True)
 
         result = model.fit_predict(df)
+        #background_tasks.add_task(model.fit_predict, df)
     except Exception:
         logger.exception('model predict failed')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return {'result': result.tolist()}
+    #return {'message': 'OK'}
 
 def update_model(db: Session, request: schema.ModelDetail):
     try:

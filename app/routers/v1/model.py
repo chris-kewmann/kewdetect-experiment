@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Union
 
@@ -47,8 +47,8 @@ async def get_model_detail(model_id: str, session: Session = Depends(get_session
              status_code=status.HTTP_200_OK,
              summary="Predict",
              description="Predict on the given data")
-async def predict(request: schema.ModelPredict):
-    return service.predict(request)
+async def predict(request: schema.ModelPredict, background_tasks: BackgroundTasks):
+    return service.predict(request, background_tasks)
 
 @router.delete(path="/", 
                status_code=status.HTTP_200_OK,

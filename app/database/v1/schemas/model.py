@@ -23,7 +23,7 @@ class ModelDetailList(BaseModel):
     models: List[ModelDetail]
 
 class ModelPredict(BaseModel):
-    run_id: str = Field(example='6fb2cd809a1f48f08c539448013ba73c')
+    mlflow_run_id: str = Field(example='6fb2cd809a1f48f08c539448013ba73c')
     table_name: str = Field(example='sample_dataset')
     columns: list = Field(example=['biaya', 'nilai'])
 
