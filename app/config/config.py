@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 # Base Settings Class
 class Settings(BaseSettings):
+    # This setup will refer to the .env file
+    # Fill the following variables with default value
+
     # Postgres database variables
     db_postgres_username: str = 'postgres'
     db_postgres_password: str = 'postgres'
@@ -25,8 +28,9 @@ class Settings(BaseSettings):
     mlflow_experiment_name: str = 'kewdetectkewdetect_models'
 
     # Security variables
-    encrypt_key: str
+    private_key: str
 
+    # Point environment variable file
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
@@ -53,7 +57,6 @@ class MlflowSetup:
     """
     def __init__(self):
         try:
-            # self.mlflow_client = None
             self.set_mlflow()
 
             logging.info("initial config is success!")
@@ -65,10 +68,7 @@ class MlflowSetup:
     def set_mlflow(self):
         try:
             mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-
             mlflow.set_experiment(settings.mlflow_experiment_name)
-
-            # self.mlflow_client = mlflow.MlflowClient()
         except Exception:
             logger.critical("failed to connect mlflow")
             raise
