@@ -8,11 +8,11 @@ from app.database.v1.crud import rule as crud
 
 logger = logging.getLogger(__name__)
 
-def create_rule(db: Session, rule: schema.RuleCreate):
+def create_rule(db: Session, request: schema.RuleCreate):
     logger.info('creating rules')
 
-    result = crud.create_rule(db, rule)
-    result.id = encrypt(str(result.id))
+    result = crud.create_rule(db, request)
+    result.id = encrypt(result.id)
 
     logger.info(f'create rule {result.id} success')
     return result
@@ -21,7 +21,7 @@ def get_rules(db: Session, limit: int = 100):
     logger.info('getting rules')
     rules = crud.get_rules(db, limit=limit)
     for rule in rules:
-        rule.id = encrypt(str(rule.id))
+        rule.id = encrypt(rule.id)
 
     logger.info('get all rules success')
     result = schema.RuleDetailList(rules=rules)
@@ -42,13 +42,13 @@ def get_rule_detail(db: Session, rule_id: str):
 
     return result
 
-def update_rule(db: Session, rule: schema.RuleUpdate):
+def update_rule(db: Session, request: schema.RuleUpdate):
     try:
-        encrypted_rule_id = rule.id
+        encrypted_rule_id = request.id
         logger.info(f'updating rule {encrypted_rule_id}')
         
-        rule.id = decrypt(encrypted_rule_id)
-        result = crud.update_rule(db, rule)
+        request.id = decrypt(encrypted_rule_id)
+        result = crud.update_rule(db, request)
         result.id = encrypted_rule_id
 
         logger.info(f'update rule {encrypted_rule_id} success')
@@ -58,16 +58,16 @@ def update_rule(db: Session, rule: schema.RuleUpdate):
     
     return result
 
-def delete_rule(db: Session, rule_id: str):
+def delete_rule(db: Session, request: schema.RuleDelete):
+    rule_id = request.id
     logger.info(f'deleting rule {rule_id}')
 
     decrypted_rule_id = int(decrypt(rule_id))
-    deleted_rule_id = crud.delete_rule(db, decrypted_rule_id)
-    deleted_rule_id = encrypt(str(deleted_rule_id))
-    result = schema.RuleDelete(id=deleted_rule_id)
+    deleted_rule = crud.delete_rule(db, decrypted_rule_id)
+    deleted_rule.id = rule_id
 
     logger.info(f'delete rule {rule_id} success')
-    return result
+    return deleted_rule
 
 def activate_rule(db: Session, rule_id: str):
     try:

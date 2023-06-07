@@ -14,7 +14,7 @@ class RuleCreate(RuleBase):
     pass
 
 class RuleDetail(RuleBase):
-    id: Union[str, None] = Field(default=None, example='Na9SdiukdW0zhoGuWr-p2E4gHh3fOrap4F2SABqckqrI1SP8SqNu0RjQMXQoBFP_Svf6mE5oQAbYwknoFl7BZomfwUhlY2rziA==')
+    id: Union[str, None] = Field(default=None, example='zmtRRQvcuB7WUX0rlHkd/DYaB2vdeZox5wXWcO6MK7w=')
     
     class Config:
         orm_mode = True
@@ -26,7 +26,7 @@ class RuleUpdate(RuleDetail):
     pass
 
 class RuleDelete(BaseModel):
-    id: str = Field(example='Na9SdiukdW0zhoGuWr-p2E4gHh3fOrap4F2SABqckqrI1SP8SqNu0RjQMXQoBFP_Svf6mE5oQAbYwknoFl7BZomfwUhlY2rziA==')
+    id: str = Field(example='zmtRRQvcuB7WUX0rlHkd/DYaB2vdeZox5wXWcO6MK7w=')
 
 class RuleState(BaseModel):
-    id: str = Field(example='Na9SdiukdW0zhoGuWr-p2E4gHh3fOrap4F2SABqckqrI1SP8SqNu0RjQMXQoBFP_Svf6mE5oQAbYwknoFl7BZomfwUhlY2rziA==')
+    id: str = Field(example='zmtRRQvcuB7WUX0rlHkd/DYaB2vdeZox5wXWcO6MK7w=')

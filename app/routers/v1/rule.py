@@ -40,9 +40,9 @@ async def create_rule(request: schema.RuleCreate, session: Session = Depends(get
             status_code=status.HTTP_200_OK,
             summary="Delete Rule",
             description="Delete existing rule",
-            response_model=schema.RuleDelete)
+            response_model=schema.RuleDetail)
 async def delete_rule(request: schema.RuleDelete, session: Session = Depends(get_session)):
-    return service.delete_rule(session, request.id)
+    return service.delete_rule(session, request)
 
 @router.put("/", 
             status_code=status.HTTP_200_OK,
@@ -68,6 +68,6 @@ async def activate_rule(request: schema.RuleState, session: Session = Depends(ge
 async def deactivate_rule(request: schema.RuleState, session: Session = Depends(get_session)):
     return service.deactivate_rule(session, request.id)
 
-@router.get("/edit/history")
+@router.get("/history")
 async def get_rule_edit_history():
     pass
