@@ -1,84 +1,72 @@
 import logging
-from fastapi import APIRouter, status, HTTPException
-from pydantic import BaseModel, Field
-from typing import List
+from fastapi import APIRouter, status, HTTPException, Depends
+from sqlalchemy.orm import Session
+from typing import List, Union
 
-from app.services.v1 import model
+from app.core.connection.postgres import get_session
+from app.services.v1 import model as service
+from app.database.v1.schemas import model as schema
 
 # Get logger
 logger = logging.getLogger(__name__)
 
-# Request schemas
-class GetModel(BaseModel):
-    name: str = Field(default=None, example='fraud-model-alfa')
-    version: str = Field(default=None, example='1.0.1')
-    limit: int = Field(default=10, example=15)
-
-class CreateModel(BaseModel):
-    name: str
-    run_name: str
-    mlflow_registered_model_name: str
-    data_source: str = Field(default='csv', include=['csv', 'database'])
-
-class DeleteModel(BaseModel):
-    name: str
-    model_id: str
-
 # Set router group
 router = APIRouter(prefix='/v1/models',
-                   tags=["models"],
                    responses={500: {'description': 'Internal Server Error'}})
 
 # Endpoints
-@router.get(path="/", 
-            status_code=status.HTTP_200_OK,
-            summary="Get model(s) information(s)",
-            description="Retrieve a list of model(s) with its attribute & detail")
-async def get_models(request: GetModel) -> List[str]:
-    return ['model-a', 'model-b']
-
 @router.post("/", 
              status_code=status.HTTP_201_CREATED,
-             summary="Create new model")
-async def create_model(request: CreateModel):
-    run_name = 'my-run'
-    mlflow_registered_model_name='my-model'
-    model_name = 'lof'
-    data_source = 'csv'
+             summary="Create model",
+             description="Create new model",
+             response_model=schema.ModelDetail)
+async def create_model(request: schema.ModelCreate, session: Session = Depends(get_session)):
+    
+    valid_model_algorithms = ['lof', 'isof', 'mcd']
+    if request.algorithm not in valid_model_algorithms:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f'algorithm {request.algorithm} is not supported')
+    
+    return service.create_model(session, request)
 
-    valid_model_names = ['lof', 'if']
-    if model_name not in valid_model_names:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'model {model_name} is not supported')
-    model.create(run_name, mlflow_registered_model_name, model_name, data_source)
+@router.get(path="/", 
+            status_code=status.HTTP_200_OK,
+            summary="Get models",
+            description="Retrieve all models",
+            response_model=schema.ModelDetailList)
+async def get_models(limit: Union[int, None] = None, session: Session = Depends(get_session)):
+    return service.get_models(session, limit)
 
-    return {'message': 'OK'}
+@router.get(path="/{model_id:path}", 
+            status_code=status.HTTP_200_OK,
+            summary="Get model detail",
+            description="Get model detail and information")
+async def get_model_detail(model_id: str, session: Session = Depends(get_session)):
+    return service.get_model_detail(session, model_id)
+
+@router.post(path="/predict", 
+             status_code=status.HTTP_200_OK,
+             summary="Predict",
+             description="Predict on the given data")
+async def predict(request: schema.ModelPredict):
+    return service.predict(request)
 
 @router.delete(path="/", 
                status_code=status.HTTP_200_OK,
-               summary="Delete existing model")
-async def delete_model(request: DeleteModel):
-    pass
+               summary="Delete existing model",
+               response_model=schema.ModelDetail)
+async def delete_model(request: schema.ModelDelete, session: Session = Depends(get_session)):
+    return service.delete_model(session, request)
 
 @router.put(path="/",
             status_code=status.HTTP_200_OK,
             summary="Edit model",
-            description="Edit existing model configuration")
-async def edit_model():
-    pass
+            description="Edit existing model configuration",
+            response_model=schema.ModelDetail)
+async def edit_model(request: schema.ModelDetail, session: Session = Depends(get_session)):
+    return service.update_model(session, request)
 
-@router.post(path="/predict", 
-             status_code=status.HTTP_200_OK)
-async def predict():
-    result, _ = model.predict(model_name='ecod', 
-                           outlier_percentage=0.1, 
-                           data_source='csv')
 
-    response = {
-        'predicted' : result.tolist()[:10]
-    }
-
-    return response
-
+"""
 @router.post(path="/deploy", 
              status_code=status.HTTP_200_OK)
 async def deploy():
@@ -88,3 +76,4 @@ async def deploy():
              status_code=status.HTTP_200_OK)
 async def undeploy():
     pass
+"""
