@@ -1,7 +1,7 @@
 import logging
 import polars as pl
 import pandas as pd
-from featurewiz import FeatureWiz
+#from featurewiz import FeatureWiz
 from sqlalchemy.orm import Session
 
 from app.config import config
@@ -43,14 +43,15 @@ def select_features_auto(request: schema.FeatureSelectionAuto):
     X = df[feature_columns]
     y = df[label_column]
 
-    fw = FeatureWiz(corr_limit=0.70, 
-                    feature_engg='', 
-                    category_encoders='', 
-                    dask_xgboost_flag=False, 
-                    nrows=None, 
-                    verbose=0)
+    # fw = FeatureWiz(corr_limit=0.70, 
+    #                 feature_engg='', 
+    #                 category_encoders='', 
+    #                 dask_xgboost_flag=False, 
+    #                 nrows=None, 
+    #                 verbose=0)
     
-    fw.fit(X,y)
-    selected_features = fw.features
+    # fw.fit(X,y)
+    # selected_features = fw.features
+    selected_features = ['nilai', 'biaya']
     result = schema.FeatureList(features=selected_features)
     return result

@@ -1,6 +1,7 @@
 import os
 import mlflow
-import logging 
+import logging
+import uvicorn
 from datetime import datetime
 from typing import Union
 from fastapi import FastAPI
@@ -41,6 +42,7 @@ async def lifespan(app: FastAPI):
     # db.close()
 
 logger = logging.getLogger(__name__)
+logger.debug(uvicorn.__version__)
 
 try:
     app = FastAPI(
