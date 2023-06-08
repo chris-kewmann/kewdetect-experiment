@@ -6,7 +6,7 @@ from typing import Union
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.routers.v1 import model, data, rule, migrate
+from app.routers.v1 import data, feature, model, rule, migrate
 from app.config.config import MlflowSetup
 
 from dotenv import load_dotenv
@@ -62,6 +62,10 @@ try:
 
     app.include_router(router=data.router,
                     tags=["Data"],
+                    responses={500: {'description': 'Internal Server Error'}})
+    
+    app.include_router(router=feature.router,
+                    tags=["Features"],
                     responses={500: {'description': 'Internal Server Error'}})
     
     app.include_router(router=model.router,
